@@ -1,0 +1,56 @@
+import folium
+import tkinter as tk
+from tkinter import ttk
+from tkwebview import WebView
+
+class MapViewer:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Real Life Map Viewer")
+
+        # Create a frame for the map
+        self.map_frame = ttk.Frame(self.root)
+        self.map_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Create a folium map
+        self.map = folium.Map(location=[45.5236, -122.6750], zoom_start=13)
+
+        # Save the map to an HTML file
+        self.map.save("map.html")
+
+        # Create a WebView to display the map
+        self.webview = WebView(self.map_frame, url="map.html")
+        self.webview.pack(fill=tk.BOTH, expand=True)
+
+        # Create a control panel
+        self.control_panel = ttk.Frame(self.root)
+        self.control_panel.pack(fill=tk.X)
+
+        # Add controls to the control panel
+        self.lat_label = ttk.Label(self.control_panel, text="Latitude:")
+        self.lat_label.pack(side=tk.LEFT, padx=5, pady=5)
+        self.lat_entry = ttk.Entry(self.control_panel)
+        self.lat_entry.pack(side=tk.LEFT, padx=5, pady=5)
+
+        self.lon_label = ttk.Label(self.control_panel, text="Longitude:")
+        self.lon_label.pack(side=tk.LEFT, padx=5, pady=5)
+        self.lon_entry = ttk.Entry(self.control_panel)
+        self.lon_entry.pack(side=tk.LEFT, padx=5, pady=5)
+
+        self.update_button = ttk.Button(self.control_panel, text="Update Map", command=self.update_map)
+        self.update_button.pack(side=tk.LEFT, padx=5, pady=5)
+
+    def update_map(self):
+        try:
+            lat = float(self.lat_entry.get())
+            lon = float(self.lon_entry.get())
+            self.map = folium.Map(location=[lat, lon], zoom_start=13)
+            self.map.save("map.html")
+            self.webview.load_url("map.html")
+        except ValueError:
+            print("Invalid latitude or longitude")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = MapViewer(root)
+    root.mainloop()
